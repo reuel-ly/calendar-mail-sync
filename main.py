@@ -1,17 +1,6 @@
 import asyncio
 import os
-from dotenv import load_dotenv
 import traceback
-
-load_dotenv()
-
-api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-if api_key:
-    os.environ["GOOGLE_API_KEY"] = api_key
-else:
-    raise ValueError("No API key found. Set GOOGLE_API_KEY or GEMINI_API_KEY in .env")
-
-
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
