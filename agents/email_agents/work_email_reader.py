@@ -7,7 +7,7 @@ google_tools = GoogleTools()
 
 work_agent = LlmAgent(
     name="WorkEmailAgent",
-    model=settings.work_email_model,
+    model=settings.work_email_model or settings.default_model,
     description="Fetches and summarizes work inbox emails.",
     instruction=settings.work_email_instruction,
     tools=[google_tools.fetch_work_emails],

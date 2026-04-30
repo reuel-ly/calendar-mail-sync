@@ -7,7 +7,7 @@ google_tools = GoogleTools()
 
 personal_agent = LlmAgent(
     name="PersonalEmailAgent",
-    model=settings.personal_email_model,
+    model=settings.personal_email_model or settings.default_model,
     description="Fetches and summarizes personal inbox emails.",
     instruction=settings.personal_email_instruction,
     tools=[google_tools.fetch_personal_emails],

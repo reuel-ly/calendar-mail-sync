@@ -7,7 +7,7 @@ google_tools = GoogleTools()
 
 calendar_agent = LlmAgent(
     name="CalendarAgent",
-    model=settings.calendar_model,
+    model=settings.calendar_model or settings.default_model,
     description="Fetches and summarizes today's calendar events.",
     instruction=settings.calendar_instruction,
     tools=[google_tools.fetch_calendar_events],

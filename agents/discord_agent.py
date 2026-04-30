@@ -7,8 +7,8 @@ discord_tools = DiscordTools()
 
 discord_agent = LlmAgent(
     name="DiscordSenderAgent",
-    model=settings.discord_model,
+    model=settings.discord_model or settings.default_model,
     description="Sends the final digest to Discord.",
-    instruction=settings.discord_instruction,
+    instruction=settings.discord_instruction or settings.default_model,
     tools=[discord_tools.send_to_discord],
 )
