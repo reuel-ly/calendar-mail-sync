@@ -2,7 +2,9 @@
 Google API tools for Gmail and Calendar.
 """
 
+import json
 import os
+from google.cloud import secretmanager
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -21,25 +23,29 @@ class GoogleTools:
     def __init__(self):
         self.scopes = SCOPES
 
-    def _get_credentials(self, token_path: str) -> Credentials:
-        """Handles OAuth for a specific Gmail account token file."""
-        creds = None
-        credentials_file = os.getenv("GOOGLE_CREDENTIALS_FILE", "credentials.json")
+    def _get_secret(self, secret_name: str) -> str:
+        """Fetch a secret from GCP Secret Manager."""
+        client = secretmanager.SecretManagerServiceClient()
+        project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
+        name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+        response = client.access_secret_version(request={"name": name})
+        return response.payload.data.decode("UTF-8")
 
-        if os.path.exists(token_path):
-            creds = Credentials.from_authorized_user_file(token_path, self.scopes)
 
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                flow = InstalledAppFlow.from_client_secrets_file(credentials_file, self.scopes)
-                creds = flow.run_local_server(port=0)
+    def _get_credentials(self, token_secret_name: str) -> Credentials:
+        """Load OAuth credentials — from Secret Manager in prod, local file in dev."""
+        
+        # Local development — read from file
+        local_path = f"tokens/{token_secret_name}.json"
+        if os.path.exists(local_path):
+            with open(local_path) as f:
+                token_data = json.load(f)
+        else:
+            # Production — read from Secret Manager
+            token_json = self._get_secret(token_secret_name)
+            token_data = json.loads(token_json)
 
-            os.makedirs(os.path.dirname(token_path), exist_ok=True)
-            with open(token_path, "w") as f:
-                f.write(creds.to_json())
-
+        creds = Credentials.from_authorized_user_info(token_data, SCOPES)
         return creds
 
     def _fetch_emails(self, token_path: str, label: str) -> str:
@@ -90,8 +96,7 @@ class GoogleTools:
         Returns a formatted string of emails including sender, subject, and preview.
         Call this to get work-related emails.
         """
-        token_path = os.getenv("GMAIL_WORK_TOKEN", "tokens/work_token.json")
-        return self._fetch_emails(token_path, label="work")
+        return self._fetch_emails("work_token", label="work")
 
     def fetch_personal_emails(self) -> str:
         """
@@ -99,8 +104,7 @@ class GoogleTools:
         Returns a formatted string of emails including sender, subject, and preview.
         Call this to get personal emails.
         """
-        token_path = os.getenv("GMAIL_PERSONAL_TOKEN", "tokens/personal_token.json")
-        return self._fetch_emails(token_path, label="personal")
+        return self._fetch_emails("personal_token", label="personal")
 
     def fetch_calendar_events(self) -> str:
         """
@@ -111,7 +115,7 @@ class GoogleTools:
         token_path = os.getenv("GMAIL_WORK_TOKEN", "tokens/work_token.json")
 
         try:
-            creds = self._get_credentials(token_path)
+            creds = self._get_credentials("work_token") 
             service = build("calendar", "v3", credentials=creds)
 
             now = datetime.now(timezone.utc)
