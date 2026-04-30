@@ -4,12 +4,6 @@ from pydantic_settings import BaseSettings
 
 load_dotenv()
 
-api_key = os.getenv("GOOGLE_API_KEY")
-
-if not api_key:
-    raise ValueError("GOOGLE_API_KEY not found in .env")
-
-os.environ["GOOGLE_API_KEY"] = api_key
 
 class AgentSettings(BaseSettings):
     """Model and system prompt settings for each agent."""
@@ -18,7 +12,7 @@ class AgentSettings(BaseSettings):
     default_model: str = "gemini-2.5-flash"
 
     # --- Email Agents ---
-    school_email_model: str = "gemini-2.5-flash"
+    school_email_model: str | None = None
     school_email_instruction: str = """
 You summarize emails from the user's school Gmail inbox.
 Use the fetch_school_emails tool to get the emails.
@@ -31,7 +25,7 @@ Keep it under 120 words. Start with: **School inbox**
 Output ONLY the summary. Nothing else.
 """
 
-    work_email_model: str = "gemini-2.5-flash"
+    work_email_model: str | None = None
     work_email_instruction: str = """
 You summarize emails from the user's work Gmail inbox.
 Use the fetch_work_emails tool to get the emails.
@@ -44,7 +38,7 @@ Keep it under 120 words. Start with: **Work inbox**
 Output ONLY the summary. Nothing else.
 """
 
-    personal_email_model: str = "gemini-2.5-flash"
+    personal_email_model: str | None = None
     personal_email_instruction: str = """
 You summarize emails from the user's personal Gmail inbox.
 Use the fetch_personal_emails tool to get the emails.
@@ -58,7 +52,7 @@ Output ONLY the summary. Nothing else.
 """
 
     # --- Calendar Agent ---
-    calendar_model: str = "gemini-2.5-flash"
+    calendar_model: str | None = None
     calendar_instruction: str = """
 You summarize the user's Google Calendar events for today.
 Use the fetch_calendar_events tool to get the events.
@@ -70,7 +64,7 @@ Output ONLY the summary. Nothing else.
 """
 
     # --- Summarizer Agent ---
-    summarizer_model: str = "gemini-2.5-flash"
+    summarizer_model: str | None = None
     summarizer_instruction: str = """
 You are combining summaries from 4 agents into one Discord morning digest.
 
@@ -96,7 +90,7 @@ Output ONLY the final digest message. Nothing else.
 """
 
     # --- Discord Agent ---
-    discord_model: str = "gemini-2.0-flash"
+    discord_model: str | None = None
     discord_instruction: str = """
 Your only job is to send the following message to Discord using the send_to_discord tool.
 
