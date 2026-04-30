@@ -4,18 +4,21 @@ Discord tools for webhook messaging.
 
 import os
 import httpx
+import asyncio
+
 
 
 class DiscordTools:
     """Handles Discord webhook interactions."""
 
-    def send_to_discord(self, message: str) -> str:
+    async def send_to_discord(SELF, message: str) -> str:
         """
         Sends the final morning digest message to Discord via webhook.
         Call this after the digest is fully composed and ready to send.
         message: The complete formatted digest text to post to Discord.
         Returns 'success' or an error message.
         """
+        await asyncio.sleep(5)
         webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
         if not webhook_url:
             return "Error: DISCORD_WEBHOOK_URL not set in .env"
