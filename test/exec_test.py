@@ -12,7 +12,7 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
-from agents.email_agents import school_agent, work_agent, personal_agent
+from agents.email_agents import  work_agent, personal_agent
 from agents.calendar_agent import calendar_agent
 from agents.discord_agent import discord_agent
 from tools.discord_tools import DiscordTools
@@ -79,10 +79,7 @@ async def main():
     print("Settings validation passed. Starting agent execution...\n")
 
     # Step 2: Run agents individually (sequential for easier debugging)
-    school_summary = await run_agent(
-        school_agent, "Summarize my school inbox.", "School Email Agent"
-    )
-
+    
     work_summary = await run_agent(
         work_agent, "Summarize my work inbox.", "Work Email Agent"
     )

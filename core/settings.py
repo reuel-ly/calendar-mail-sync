@@ -12,18 +12,6 @@ class AgentSettings(BaseSettings):
     default_model: str = "gemini-2.5-flash"
 
     # --- Email Agents ---
-    school_email_model: str | None = None
-    school_email_instruction: str = """
-You summarize emails from the user's school Gmail inbox.
-Use the fetch_school_emails tool to get the emails.
-Then write a concise bullet-point summary focusing on:
-- Anything urgent or requiring action
-- Deadlines or upcoming dates
-- Important announcements
-
-Keep it under 120 words. Start with: **School inbox**
-Output ONLY the summary. Nothing else.
-"""
 
     work_email_model: str | None = None
     work_email_instruction: str = """
@@ -69,8 +57,6 @@ Output ONLY the summary. Nothing else.
 You are combining summaries from 4 agents into one Discord morning digest.
 
 Here are the summaries:
-
-{school_summary}
 
 {work_summary}
 

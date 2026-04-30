@@ -83,14 +83,6 @@ class GoogleTools:
         except Exception as e:
             return f"Error fetching {label} emails: {str(e)}"
 
-    def fetch_school_emails(self) -> str:
-        """
-        Fetches recent and unread emails from the school Gmail inbox.
-        Returns a formatted string of emails including sender, subject, and preview.
-        Call this to get school-related emails.
-        """
-        token_path = os.getenv("GMAIL_SCHOOL_TOKEN", "tokens/school_token.json")
-        return self._fetch_emails(token_path, label="school")
 
     def fetch_work_emails(self) -> str:
         """
@@ -116,7 +108,7 @@ class GoogleTools:
         Returns a formatted list of events with titles, times, and locations.
         Call this to get today's schedule.
         """
-        token_path = os.getenv("GMAIL_SCHOOL_TOKEN", "tokens/school_token.json")
+        token_path = os.getenv("GMAIL_WORK_TOKEN", "tokens/work_token.json")
 
         try:
             creds = self._get_credentials(token_path)
